@@ -2,12 +2,14 @@ package iso
 
 import (
 	"fmt"
-	"github.com/mitchellh/multistep"
-	vmwcommon "github.com/packer-community/packer-windows-plugins/builder/vmware-windows/common"
-	"github.com/mitchellh/packer/packer"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/mitchellh/multistep"
+	"github.com/mitchellh/packer/packer"
+	"github.com/mitchellh/packer/template/interpolate"
+	vmwcommon "github.com/packer-community/packer-windows-plugins/builder/vmware-windows/common"
 )
 
 type vmxTemplateData struct {
@@ -36,13 +38,13 @@ type stepCreateVMX struct {
 }
 
 func (s *stepCreateVMX) Run(state multistep.StateBag) multistep.StepAction {
-	config := state.Get("config").(*config)
+	config := state.Get("config").(*Config)
 	isoPath := state.Get("iso_path").(string)
 	ui := state.Get("ui").(packer.Ui)
 
 	ui.Say("Building and writing VMX file")
-
-	tplData := &vmxTemplateData{
+	ctx := config.ctx
+	ctx.Data = &vmxTemplateData{
 		Name:     config.VMName,
 		GuestOS:  config.GuestOSType,
 		DiskName: config.DiskName,
@@ -71,26 +73,7 @@ func (s *stepCreateVMX) Run(state multistep.StateBag) multistep.StepAction {
 		vmxTemplate = string(rawBytes)
 	}
 
-	if len(config.AdditionalDiskSize) > 0 {
-		for i, _ := range config.AdditionalDiskSize {
-			data := &additionalDiskTemplateData{
-				DiskNumber: i + 1,
-				DiskName:   config.DiskName,
-			}
-
-			diskTemplate, err := config.tpl.Process(DefaultAdditionalDiskTemplate, data)
-			if err != nil {
-				err := fmt.Errorf("Error preparing VMX template for additional disk: %s", err)
-				state.Put("error", err)
-				ui.Error(err.Error())
-				return multistep.ActionHalt
-			}
-
-			vmxTemplate += diskTemplate
-		}
-	}
-
-	vmxContents, err := config.tpl.Process(vmxTemplate, tplData)
+	vmxContents, err := interpolate.Render(vmxTemplate, &ctx)
 	if err != nil {
 		err := fmt.Errorf("Error procesing VMX template: %s", err)
 		state.Put("error", err)

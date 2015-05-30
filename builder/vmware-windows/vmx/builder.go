@@ -88,7 +88,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 		&vmwcommon.StepTypeBootCommand{
 			BootCommand: b.config.BootCommand,
 			VMName:      b.config.VMName,
-			Tpl:         b.config.tpl,
+			Ctx:         b.config.ctx,
 		},
 		vmwcommon.NewConnectStep(
 			"winrm", //b.config.RunConfig.CommunicatorType,
@@ -99,7 +99,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 			RemoteType:        b.config.RemoteType,
 			ToolsUploadFlavor: b.config.ToolsUploadFlavor,
 			ToolsUploadPath:   b.config.ToolsUploadPath,
-			Tpl:               b.config.tpl,
+			Ctx:               b.config.ctx,
 		},
 		&common.StepProvision{},
 		&vmwcommon.StepShutdown{

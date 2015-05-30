@@ -3,13 +3,9 @@ package iso
 import (
 	"bufio"
 	"bytes"
-	gossh "code.google.com/p/go.crypto/ssh"
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/mitchellh/multistep"
-	"github.com/mitchellh/packer/communicator/ssh"
-	"github.com/mitchellh/packer/packer"
 	"io"
 	"log"
 	"net"
@@ -17,6 +13,11 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/multistep"
+	"github.com/mitchellh/packer/communicator/ssh"
+	"github.com/mitchellh/packer/packer"
+	gossh "golang.org/x/crypto/ssh"
 )
 
 // ESX5 driver talks to an ESXi5 hypervisor remotely over SSH to build
@@ -201,7 +202,7 @@ func (d *ESX5Driver) VNCAddress(portMin, portMax uint) (string, uint, error) {
 }
 
 func (d *ESX5Driver) GuestAddress(state multistep.StateBag) (string, error) {
-	config := state.Get("config").(*config)
+	config := state.Get("config").(*Config)
 
 	if address, ok := state.GetOk("vm_ipaddress"); ok {
 		return address.(string), nil

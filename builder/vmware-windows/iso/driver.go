@@ -3,25 +3,25 @@ package iso
 import (
 	"fmt"
 
-	vmwcommon "github.com/packer-community/packer-windows-plugins/builder/vmware-windows/common"
+	vmwcommon "github.com/mitchellh/packer/builder/vmware/common"
 )
 
 // NewDriver returns a new driver implementation for this operating
 // system, or an error if the driver couldn't be initialized.
-func NewDriver(config *config) (vmwcommon.Driver, error) {
+func NewDriver(config *Config) (vmwcommon.Driver, error) {
 	drivers := []vmwcommon.Driver{}
 
 	if config.RemoteType == "" {
-		return vmwcommon.NewDriver(&config.DriverConfig)
+		return vmwcommon.NewDriver(&config.DriverConfig, &config.SSHConfig)
 	}
 
 	drivers = []vmwcommon.Driver{
 		&ESX5Driver{
-			Host:      config.RemoteHost,
-			Port:      config.RemotePort,
-			Username:  config.RemoteUser,
-			Password:  config.RemotePassword,
-			Datastore: config.RemoteDatastore,
+			Host:           config.RemoteHost,
+			Port:           config.RemotePort,
+			Username:       config.RemoteUser,
+			Password:       config.RemotePassword,
+			Datastore:      config.RemoteDatastore,
 		},
 	}
 
