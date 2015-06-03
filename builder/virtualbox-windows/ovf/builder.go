@@ -72,7 +72,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 			GuestAdditionsMode:   b.config.GuestAdditionsMode,
 			GuestAdditionsURL:    b.config.GuestAdditionsURL,
 			GuestAdditionsSHA256: b.config.GuestAdditionsSHA256,
-			Tpl:                  b.config.tpl,
+			Ctx:                  b.config.ctx,
 		},
 		&vboxovf.StepImport{
 			Name:        b.config.VMName,
@@ -90,7 +90,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 		},
 		&vboxcommon.StepVBoxManage{
 			Commands: b.config.VBoxManage,
-			Tpl:      b.config.tpl,
+			Ctx:      b.config.ctx,
 		},
 		&vboxcommon.StepRun{
 			BootWait: b.config.BootWait,
@@ -99,7 +99,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 		&vboxcommon.StepTypeBootCommand{
 			BootCommand: b.config.BootCommand,
 			VMName:      b.config.VMName,
-			Tpl:         b.config.tpl,
+			Ctx:         b.config.ctx,
 		},
 		winvboxcommon.NewConnectStep(b.config.WinRMConfig),
 		&vboxcommon.StepUploadVersion{
@@ -108,7 +108,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 		&vboxcommon.StepUploadGuestAdditions{
 			GuestAdditionsMode: b.config.GuestAdditionsMode,
 			GuestAdditionsPath: b.config.GuestAdditionsPath,
-			Tpl:                b.config.tpl,
+			Ctx:                b.config.ctx,
 		},
 		new(common.StepProvision),
 		&vboxcommon.StepShutdown{
@@ -118,7 +118,7 @@ func (b *Builder) Run(ui packer.Ui, hook packer.Hook, cache packer.Cache) (packe
 		new(vboxcommon.StepRemoveDevices),
 		&vboxcommon.StepVBoxManage{
 			Commands: b.config.VBoxManagePost,
-			Tpl:      b.config.tpl,
+			Ctx:      b.config.ctx,
 		},
 		&winvboxcommon.StepExport{
 			Format:     b.config.Format,

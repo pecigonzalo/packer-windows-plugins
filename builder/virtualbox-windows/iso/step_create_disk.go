@@ -2,12 +2,13 @@ package iso
 
 import (
 	"fmt"
-	"github.com/mitchellh/multistep"
-	vboxcommon "github.com/mitchellh/packer/builder/virtualbox/common"
-	"github.com/mitchellh/packer/packer"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/mitchellh/multistep"
+	vboxcommon "github.com/mitchellh/packer/builder/virtualbox/common"
+	"github.com/mitchellh/packer/packer"
 )
 
 // This step creates the virtual disk that will be used as the
@@ -15,7 +16,7 @@ import (
 type stepCreateDisk struct{}
 
 func (s *stepCreateDisk) Run(state multistep.StateBag) multistep.StepAction {
-	config := state.Get("config").(*config)
+	config := state.Get("config").(*Config)
 	driver := state.Get("driver").(vboxcommon.Driver)
 	ui := state.Get("ui").(packer.Ui)
 	vmName := state.Get("vmName").(string)

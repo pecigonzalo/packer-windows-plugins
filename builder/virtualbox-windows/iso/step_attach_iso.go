@@ -2,6 +2,7 @@ package iso
 
 import (
 	"fmt"
+
 	"github.com/mitchellh/multistep"
 	vboxcommon "github.com/mitchellh/packer/builder/virtualbox/common"
 	"github.com/mitchellh/packer/packer"
@@ -17,7 +18,7 @@ type stepAttachISO struct {
 }
 
 func (s *stepAttachISO) Run(state multistep.StateBag) multistep.StepAction {
-	config := state.Get("config").(*config)
+	config := state.Get("config").(*Config)
 	driver := state.Get("driver").(vboxcommon.Driver)
 	isoPath := state.Get("iso_path").(string)
 	ui := state.Get("ui").(packer.Ui)
@@ -65,7 +66,7 @@ func (s *stepAttachISO) Cleanup(state multistep.StateBag) {
 		return
 	}
 
-	config := state.Get("config").(*config)
+	config := state.Get("config").(*Config)
 	driver := state.Get("driver").(vboxcommon.Driver)
 	vmName := state.Get("vmName").(string)
 

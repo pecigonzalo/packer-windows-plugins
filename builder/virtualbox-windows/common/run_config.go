@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mitchellh/packer/packer"
+	"github.com/mitchellh/packer/template/interpolate"
 )
 
 type RunConfig struct {
@@ -21,7 +21,7 @@ type RunConfig struct {
 	BootWait time.Duration ``
 }
 
-func (c *RunConfig) Prepare(t *packer.ConfigTemplate) []error {
+func (c *RunConfig) Prepare(ctx *interpolate.Context) []error {
 	if c.RawBootWait == "" {
 		c.RawBootWait = "10s"
 	}
@@ -42,20 +42,7 @@ func (c *RunConfig) Prepare(t *packer.ConfigTemplate) []error {
 		c.WinRMHostPortMax = 6985
 	}
 
-	templates := map[string]*string{
-		"boot_wait":      &c.RawBootWait,
-		"http_directory": &c.HTTPDir,
-	}
-
-	errs := make([]error, 0)
-	for n, ptr := range templates {
-		var err error
-		*ptr, err = t.Process(*ptr, nil)
-		if err != nil {
-			errs = append(errs, fmt.Errorf("Error processing %s: %s", n, err))
-		}
-	}
-
+	var errs []error
 	var err error
 	c.BootWait, err = time.ParseDuration(c.RawBootWait)
 
@@ -63,32 +50,14 @@ func (c *RunConfig) Prepare(t *packer.ConfigTemplate) []error {
 		errs = append(errs, fmt.Errorf("Failed parsing boot_wait: %s", err))
 	}
 
-	if c.HTTPPortMin == c.HTTPPortMax {
-		errs = append(errs,
-			errors.New("http_port_max must be greater than http_port_min"))
-	}
-
 	if c.HTTPPortMin > c.HTTPPortMax {
 		errs = append(errs,
 			errors.New("http_port_min must be less than http_port_max"))
 	}
 
-	if c.HTTPPortMin > c.HTTPPortMin {
-		errs = append(errs, errors.New("http_port_min must be less than http_port_max"))
-	}
-
-	if c.WinRMHostPortMin == c.WinRMHostPortMax {
-		errs = append(errs,
-			errors.New("winrm_host_port_max must be greater than winrm_host_port_min"))
-
-	}
 	if c.WinRMHostPortMin > c.WinRMHostPortMax {
 		errs = append(errs,
 			errors.New("winrm_host_port_min must be less than winrm_host_port_max"))
-	}
-
-	if c.WinRMHostPortMin > c.WinRMHostPortMin {
-		errs = append(errs, errors.New("winrm_host_port_min must be less than winrm_host_port_max"))
 	}
 
 	return errs
