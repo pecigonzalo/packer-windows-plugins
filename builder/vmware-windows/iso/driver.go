@@ -3,7 +3,7 @@ package iso
 import (
 	"fmt"
 
-	vmwcommon "github.com/mitchellh/packer/builder/vmware/common"
+	vmwcommon "github.com/packer-community/packer-windows-plugins/builder/vmware-windows/common"
 )
 
 // NewDriver returns a new driver implementation for this operating
@@ -12,7 +12,7 @@ func NewDriver(config *Config) (vmwcommon.Driver, error) {
 	drivers := []vmwcommon.Driver{}
 
 	if config.RemoteType == "" {
-		return vmwcommon.NewDriver(&config.DriverConfig, &config.SSHConfig)
+		return vmwcommon.NewDriver(&config.DriverConfig)
 	}
 
 	drivers = []vmwcommon.Driver{
